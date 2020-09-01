@@ -191,21 +191,24 @@ def get_locations_from_labwhere(labware_barcodes):
     )
 
 
-def get_cherrypicked_samples(root_sample_ids):
+def get_cherrypicked_samples(root_sample_ids, plate_barcodes):
     # Find which samples have been cherrypicked using MLWH & Events warehouse
     # Returns dataframe with 1 column, 'Root Sample ID', containing Root Sample ID of those that have been cherrypicked
     root_sample_id_string = "'" + "','".join(root_sample_ids) + "'"
+    plate_barcodes_string = "'" + "','".join(plate_barcodes) + "'"
 
     ml_wh_db = app.config['ML_WH_DB']
     events_wh_db = app.config['EVENTS_WH_DB']
 
     sql = ("select mlwh_sample.description as `Root Sample ID`"
                 f" FROM {app.config['ML_WH_DB']}.sample as mlwh_sample"
+                f" JOIN {app.config['ML_WH_DB']}.stock_resource mlwh_stock_resource ON (mlwh_sample.id_sample_tmp = mlwh_stock_resource.id_sample_tmp)"
                 f" JOIN {app.config['EVENTS_WH_DB']}.subjects mlwh_events_subjects ON (mlwh_events_subjects.friendly_name = sanger_sample_id)"
                 f" JOIN {app.config['EVENTS_WH_DB']}.roles mlwh_events_roles ON (mlwh_events_roles.subject_id = mlwh_events_subjects.id)"
                 f" JOIN {app.config['EVENTS_WH_DB']}.events mlwh_events_events ON (mlwh_events_roles.event_id = mlwh_events_events.id)"
                 f" JOIN {app.config['EVENTS_WH_DB']}.event_types mlwh_events_event_types ON (mlwh_events_events.event_type_id = mlwh_events_event_types.id)"
                 f" WHERE mlwh_sample.description IN ({root_sample_id_string})"
+                f" AND mlwh_stock_resource.labware_human_barcode IN ({plate_barcodes_string})"
                 " AND mlwh_events_event_types.key = 'cherrypick_layout_set'"
                 " GROUP BY mlwh_sample.description")
 
@@ -255,9 +258,11 @@ def get_all_positive_samples(samples):
     return positive_samples_df
 
 def add_cherrypicked_column(existing_dataframe):
-    root_sample_ids = existing_dataframe['Root Sample ID'].to_list()
 
-    cherrypicked_samples_df = get_cherrypicked_samples(root_sample_ids)
+    root_sample_ids = existing_dataframe['Root Sample ID'].to_list()
+    plate_barcodes = existing_dataframe['plate_barcode'].unique()
+
+    cherrypicked_samples_df = get_cherrypicked_samples(root_sample_ids, plate_barcodes)
     cherrypicked_samples_df['LIMS submission'] = 'Yes'
 
     existing_dataframe = existing_dataframe.merge(cherrypicked_samples_df, how="left", on="Root Sample ID")

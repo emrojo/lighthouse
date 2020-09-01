@@ -33,6 +33,8 @@ def create_report() -> str:
     samples = app.data.driver.db.samples
     positive_samples_df = get_all_positive_samples(samples)
 
+    
+
     logger.debug("Getting location barcodes from labwhere")
     labware_to_location_barcode_df = map_labware_to_location(get_distinct_plate_barcodes(samples))
 

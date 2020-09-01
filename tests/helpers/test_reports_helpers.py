@@ -70,6 +70,7 @@ def test_get_cherrypicked_samples(app, freezer):
 
   expected = pd.DataFrame(['MCM001', 'MCM003', 'MCM005'], columns=['Root Sample ID'], index=[0, 1, 2])
   samples = ['MCM001','MCM002','MCM003','MCM004','MCM005']
+  plate_barcodes = ['123', '456']
 
   with app.app_context():
     with patch(
@@ -78,7 +79,7 @@ def test_get_cherrypicked_samples(app, freezer):
       with patch(
           "pandas.read_sql", return_value=expected,
         ):
-        returned_samples = get_cherrypicked_samples(samples)
+        returned_samples = get_cherrypicked_samples(samples, plate_barcodes)
         assert returned_samples.at[0, 'Root Sample ID'] == "MCM001"
         assert returned_samples.at[1, 'Root Sample ID'] == "MCM003"
         assert returned_samples.at[2, 'Root Sample ID'] == "MCM005"
@@ -128,20 +129,20 @@ def test_add_cherrypicked_column(app, freezer):
     # mocks response from get_cherrypicked_samples()
     existing_dataframe = pd.DataFrame(
         [
-            ['MCM001', 'TEST'],
-            ['MCM002', 'TEST'],
-            ['MCM003', 'TEST']
+            ['MCM001', '123', 'TEST'],
+            ['MCM002', '123', 'TEST'],
+            ['MCM003', '123', 'TEST']
         ],
-        columns=['Root Sample ID', 'Lab ID']
+        columns=['Root Sample ID', 'plate_barcode', 'Lab ID']
     )
 
     mock_get_cherrypicked_samples = pd.DataFrame(['MCM001', 'MCM003'], columns=['Root Sample ID'])
 
-    expected_columns = ['Root Sample ID', 'Lab ID', 'LIMS submission']
+    expected_columns = ['Root Sample ID', 'plate_barcode', 'Lab ID', 'LIMS submission']
     expected_data = [
-        ['MCM001', 'TEST', 'Yes'],
-        ['MCM002', 'TEST', 'No'],
-        ['MCM003', 'TEST', 'Yes']
+        ['MCM001', '123', 'TEST', 'Yes'],
+        ['MCM002', '123', 'TEST', 'No'],
+        ['MCM003', '123', 'TEST', 'Yes']
     ]
 
     with app.app_context():
@@ -161,19 +162,19 @@ def test_add_cherrypicked_column_no_rows(app, freezer):
     # mocks response from get_cherrypicked_samples()
     existing_dataframe = pd.DataFrame(
         [
-            ['MCM001', 'TEST'],
-            ['MCM002', 'TEST'],
+            ['MCM001', '123', 'TEST'],
+            ['MCM002', '123', 'TEST'],
         ],
-        columns=['Root Sample ID', 'Lab ID']
+        columns=['Root Sample ID', 'plate_barcode', 'Lab ID']
     )
 
     # Not sure if this is an accurate mock - haven't tried it with a real db connection
     mock_get_cherrypicked_samples = pd.DataFrame([], columns=['Root Sample ID'])
 
-    expected_columns = ['Root Sample ID', 'Lab ID', 'LIMS submission']
+    expected_columns = ['Root Sample ID', 'plate_barcode', 'Lab ID', 'LIMS submission']
     expected_data = [
-        ['MCM001', 'TEST', 'No'],
-        ['MCM002', 'TEST', 'No']
+        ['MCM001', '123', 'TEST', 'No'],
+        ['MCM002', '123', 'TEST', 'No']
     ]
 
     with app.app_context():
