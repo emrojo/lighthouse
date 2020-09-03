@@ -194,6 +194,7 @@ def get_locations_from_labwhere(labware_barcodes):
 def get_cherrypicked_samples(root_sample_ids, plate_barcodes):
     # Find which samples have been cherrypicked using MLWH & Events warehouse
     # Returns dataframe with 1 column, 'Root Sample ID', containing Root Sample ID of those that have been cherrypicked
+    # TODO: move into external method.
     root_sample_id_string = "'" + "','".join(root_sample_ids) + "'"
     plate_barcodes_string = "'" + "','".join(plate_barcodes) + "'"
 
