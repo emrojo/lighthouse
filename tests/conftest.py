@@ -16,7 +16,7 @@ from .data.fixture_data import (
     LOTS_OF_SAMPLES,
     LOTS_OF_SAMPLES_DECLARATIONS_PAYLOAD,
     MULTIPLE_ERRORS_SAMPLES_DECLARATIONS,
-    SAMPLES_NO_DECLARATION
+    SAMPLES_NO_DECLARATION,
 )
 
 
@@ -110,6 +110,7 @@ def samples(app):
     with app.app_context():
         samples_collection.delete_many({})
 
+
 @pytest.fixture
 def samples_no_declaration(app):
     with app.app_context():
@@ -122,6 +123,7 @@ def samples_no_declaration(app):
     # clear up after the fixture is used
     with app.app_context():
         samples_collection.delete_many({})
+
 
 @pytest.fixture
 def mocked_responses():
@@ -138,18 +140,22 @@ def labwhere_samples_simple(app, mocked_responses):
         responses.POST, labwhere_url, body=body, status=HTTPStatus.OK,
     )
 
+
 @pytest.fixture
 def labwhere_samples_multiple(app, mocked_responses):
     labwhere_url = f"http://{app.config['LABWHERE_URL']}/api/labwares/searches"
 
-    body = json.dumps([
-        {"barcode": "123", "location": {"barcode": "4567"}},
-        {"barcode": "456", "location": {"barcode": "1234"}},
-        {"barcode": "789", "location": {}}
-    ])
+    body = json.dumps(
+        [
+            {"barcode": "123", "location": {"barcode": "4567"}},
+            {"barcode": "456", "location": {"barcode": "1234"}},
+            {"barcode": "789", "location": {}},
+        ]
+    )
     mocked_responses.add(
         responses.POST, labwhere_url, body=body, status=HTTPStatus.OK,
     )
+
 
 @pytest.fixture
 def labwhere_samples_error(app, mocked_responses):

@@ -12,11 +12,12 @@ from lighthouse.helpers.reports import (
     get_all_positive_samples,
     add_cherrypicked_column,
     get_distinct_plate_barcodes,
-    join_samples_declarations
+    join_samples_declarations,
 )
 from lighthouse.utils import pretty
 
 logger = logging.getLogger(__name__)
+
 
 def create_report() -> str:
     """Creates a positve samples on site record using the samples collection and location
@@ -32,8 +33,6 @@ def create_report() -> str:
     logger.debug("Getting all positive samples")
     samples = app.data.driver.db.samples
     positive_samples_df = get_all_positive_samples(samples)
-
-    
 
     logger.debug("Getting location barcodes from labwhere")
     labware_to_location_barcode_df = map_labware_to_location(get_distinct_plate_barcodes(samples))
@@ -80,7 +79,3 @@ def create_report_job():
     logger.info("Starting create_report job")
     with scheduler.app.app_context():
         create_report()
-
-
-
-

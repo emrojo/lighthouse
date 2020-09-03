@@ -11,7 +11,9 @@ SCHEDULER_RUN = False
 
 MONGO_HOST = "vm-mg-psd-uat1.internal.sanger.ac.uk"
 MONGO_DBNAME = "lighthouseUATDB"
-MONGO_URI = "mongodb://lighthouse_owner:ora7gepe7@vm-mg-psd-uat1.internal.sanger.ac.uk/lighthouseUATDB"
+MONGO_URI = (
+    "mongodb://lighthouse_owner:ora7gepe7@vm-mg-psd-uat1.internal.sanger.ac.uk/lighthouseUATDB"
+)
 # MLWH_CONN_STRING: "mlwhd_admin:jEbRepuJe7@mlwh-db:3436"
 MLWH_CONN_STRING: "mlwh_admin:pESatUpr8S@mlwh-db:3435"
 ML_WH_DB = "mlwhd_mlwarehouse_devdata"
