@@ -57,7 +57,7 @@ jobs:
           mypy .
       - name: Create SQL Server testing database
         run: |
-          python setup_sqlserver_test_db  
+          python setup_sqlserver_test_db.py
       - name: Setup the test MLWH database
         run: |
           python setup_test_db.py
